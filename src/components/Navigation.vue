@@ -14,27 +14,42 @@
           Home
         </router-link
         >
-        <!--        <router-link :to="{ name: 'Create' }" class="cursor-pointer"-->
-        <!--          >create</router-link-->
-        <!--        >-->
-        <router-link :to="{ name: 'Login' }" class="cursor-pointer"
+        <router-link v-if="!user" :to="{ name: 'Login' }" class="cursor-pointer"
         >Login
         </router-link
         >
-        <router-link :to="{ name: 'Register' }" class="cursor-pointer"
+        <router-link v-if="user" :to="{ name: 'CreatePage' }" class="cursor-pointer"
+        >create
+        </router-link
+        >
+        <router-link v-if="!user" :to="{ name: 'Register' }" class="cursor-pointer"
         >Register
         </router-link
         >
-        <li class="cursor-pointer">Logout</li>
+        <li @click="logout" v-if="user" class="cursor-pointer">Logout</li>
       </ul>
     </nav>
   </header>
 </template>
 
 <script>
+import {supabase} from "../supabase/init"
+import {useRouter} from "vue-router"
+import store from "../store/index";
+import {computed} from "vue"
+
 export default {
   setup() {
-    return {};
+    const user = computed(() => store.state.user)
+    const router = useRouter();
+    const logout = async () => {
+      await supabase.auth.signOut()
+      router.push({name: "Home"})
+    }
+    return {
+      logout,
+      user
+    };
   },
 };
 </script>

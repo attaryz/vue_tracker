@@ -1,0 +1,285 @@
+<template>
+  <div class="px-4 py-10 mx-auto flex flex-col justify-center items-center">
+    <!--    status message-->
+    <div
+      v-if="statusMessage || errorMessage"
+      class="mb-10 p-4 bg-light-grey rounded-md shadow-lg"
+    >
+      <p class="text-at-light-green">{{ statusMessage }}</p>
+      <p class="text-red-500">{{ errorMessage }}</p>
+    </div>
+    <!--      create form-->
+    <div
+      class="p-8 flex items-start bg-light-grey rounded-md shadow-lg w-3/5 justify-center"
+    >
+      <form @submit.prevent="saveWorkout" class="flex flex-col gap-y-5 w-full">
+        <h1 class="text-2xl text-at-light-green">Record Workout</h1>
+        <div class="flex flex-col">
+          <label for="workout-name" class="mb-1 text-sm text-at-light-green"
+            >Workout Name</label
+          >
+          <input
+            type="text"
+            required
+            class="p-2 text-gray-500 focus:outline-none rounded-md"
+            id="workout-name"
+            v-model="workoutName"
+          />
+        </div>
+        <div class="flex flex-col">
+          <label for="workout-type" class="mb-1 text-sm text-at-light-green"
+            >Workout Type</label
+          >
+          <select
+            id="workout-type"
+            class="p-2 text-gray-500 focus:outline-none rounded-md px-4"
+            required
+            v-model="workoutType"
+            @change="workoutChange"
+          >
+            <option value="select-workout">Select Workout Type</option>
+            <option value="cardio">Cardio</option>
+            <option value="strength">Strength</option>
+          </select>
+        </div>
+        <!--          strength inputs-->
+        <div
+          v-if="workoutType === 'strength'"
+          class="flex flex-col gap-y-4 items-center"
+        >
+          <div
+            class="flex flex-col gap-x-4 gap-y-2 relative md:flex-row items-center"
+            v-for="(item, index) in exercises"
+            :key="index"
+          >
+            <div class="flex flex-col md:w-1/3">
+              <label
+                for="exercise-name"
+                class="mb-1 text-sm text-at-light-green"
+                >Exercise</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.exercise"
+              />
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="sets" class="mb-1 text-sm text-at-light-green"
+                >Sets</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.sets"
+              />
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="reps" class="mb-1 text-sm text-at-light-green"
+                >Reps</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.reps"
+              />
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="weight" class="mb-1 text-sm text-at-light-green"
+                >Weight</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.weight"
+              />
+            </div>
+            <img
+              @click="deleteExercise(item.id)"
+              src="@/assets/trash.svg"
+              class="h-4 w-auto cursor-pointer"
+              alt="trash icon"
+            />
+          </div>
+          <button
+            @click="createWorkout"
+            type="button"
+            class="mt-6 py-2 px-6 rounded-md self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
+          >
+            Add Exercise
+          </button>
+        </div>
+        <div
+          v-if="workoutType === 'cardio'"
+          class="flex flex-col gap-y-4 items-center"
+        >
+          <div
+            class="flex flex-col gap-x-4 gap-y-2 relative md:flex-row items-center"
+            v-for="(item, index) in exercises"
+            :key="index"
+          >
+            <div class="flex flex-col md:w-1/3">
+              <label for="cardio-type" class="mb-1 text-sm text-at-light-green"
+                >Type</label
+              >
+              <select
+                id="cardio-type-"
+                class="p-2 w-full text-gray-500 focus:outline-none rounded-md"
+                v-model="cardioType"
+              >
+                <option value="#">Select Type</option>
+                <option value="run">Run</option>
+                <option value="walk">Walk</option>
+              </select>
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="distance" class="mb-1 text-sm text-at-light-green"
+                >Distance</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.distance"
+              />
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="duration" class="mb-1 text-sm text-at-light-green"
+                >duration</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.duration"
+              />
+            </div>
+            <div class="flex flex-col flex-1">
+              <label for="pace" class="mb-1 text-sm text-at-light-green"
+                >Pace</label
+              >
+              <input
+                type="text"
+                required
+                class="p-2 full text-gray-500 focus:outline-none rounded-md"
+                v-model="item.pace"
+              />
+            </div>
+            <img
+              @click="deleteExercise(item.id)"
+              src="@/assets/trash.svg"
+              class="h-4 w-auto cursor-pointer"
+              alt="trash icon"
+            />
+          </div>
+          <button
+            @click="createWorkout"
+            type="button"
+            class="mt-6 py-2 px-6 rounded-md self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
+          >
+            Add Exercise
+          </button>
+        </div>
+        <button
+          type="submit"
+          class="mt-6 py-2 px-6 rounded-md self-start text-sm text-white bg-at-light-green duration-200 border-solid border-2 border-transparent hover:border-at-light-green hover:bg-white hover:text-at-light-green"
+        >
+          Submit
+        </button>
+      </form>
+    </div>
+  </div>
+</template>
+<script>
+import { ref } from "vue"
+import { uid } from "uid"
+import { supabase } from "../supabase/init"
+export default {
+  name: "CreatePage",
+  setup() {
+    const workoutName = ref("")
+    const workoutType = ref("select-type")
+    const exercises = ref([1])
+    const statusMessage = ref(null)
+    const errorMessage = ref(null)
+
+    const createWorkout = () => {
+      if (workoutName.value === "strength") {
+        exercises.value.push({
+          id: uid(),
+          exercise: "",
+          sets: "",
+          reps: "",
+          weight: "",
+        })
+        return
+      }
+      exercises.value.push({
+        id: uid(),
+        cardioType: "",
+        distance: "",
+        duration: "",
+        pace: "",
+      })
+    }
+    const workoutChange = () => {
+      exercises.value = []
+      createWorkout()
+    }
+    const deleteExercise = (id) => {
+      if (exercises.value.length > 1) {
+        exercises.value = exercises.value.filter(
+          (exercise) => exercise.id !== id
+        )
+        return
+      }
+      errorMessage.value = "You must have at least one exercise"
+      setTimeout(() => {
+        errorMessage.value = false
+      }, 3000)
+    }
+
+    const saveWorkout = async () => {
+      try {
+        const { error } = await supabase.from("workouts").insert([
+          {
+            workoutName: workoutName.value,
+            workoutType: workoutType.value,
+            exercises: exercises.value,
+          },
+        ])
+        if (error) {
+          throw error
+        }
+        statusMessage.value = "Workout created"
+        workoutName.value = ""
+        workoutType.value = "select-workout"
+        exercises.value = []
+        setTimeout(() => {
+          statusMessage.value = false
+        }, 5000)
+      } catch (err) {
+        errorMessage.value = err.message
+        setTimeout(() => {
+          errorMessage.value = false
+        }, 3000)
+      }
+    }
+    return {
+      workoutName,
+      workoutType,
+      exercises,
+      statusMessage,
+      errorMessage,
+      createWorkout,
+      workoutChange,
+      deleteExercise,
+      saveWorkout,
+    }
+  },
+}
+</script>

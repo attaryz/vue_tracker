@@ -3,11 +3,10 @@ export default {
   name: "Home",
   components: {},
   setup() {
-    return {};
+    return {}
   },
-};
+}
 </script>
 <template>
-  <main>
-  </main>
+  <main></main>
 </template>

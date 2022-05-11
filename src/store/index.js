@@ -1,13 +1,12 @@
-import {reactive} from "vue";
+import { reactive } from "vue"
 
 const state = reactive({
-    user: null
+  user: null,
 })
 const methods = {
-    setUser(payload) {
-        state.user = payload ? payload.user : null
-    }
+  setUser(payload) {
+    state.user = payload ? payload.user : null
+  },
 }
 
-
-export default {state, methods}
+export default { state, methods }
